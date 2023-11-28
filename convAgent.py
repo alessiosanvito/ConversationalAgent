@@ -20,16 +20,11 @@ from langchain.chains.conversation.prompt import ENTITY_MEMORY_CONVERSATION_TEMP
 from langchain.prompts.prompt import PromptTemplate
 
 
-#### KEY + PROMPT
-from keyprompt_secrets import OPENAI_API_KEY
-os.environ['OPENAI_API_KEY'] = OPENAI_API_KEY
-
+# PROMPT
 from keyprompt_secrets import templateAgent
 
 
-
 st.set_page_config(page_title='🧠JailbreakGPT🤖', layout='wide')
-
 
 
 # Prompt definition (inspired by ENTITY_MEMORY_CONVERSATION_TEMPLATE)
@@ -37,9 +32,6 @@ ENTITY_MEMORY_CONVERSATION_PROMPT = PromptTemplate(
     input_variables=["entities", "history", "input"],
     template=templateAgent # _DEFAULT_ENTITY_MEMORY_CONVERSATION_TEMPLATE,
 )
-
-
-
 
 
 # Import session state for Streamlit
@@ -57,7 +49,7 @@ if "stored_session" not in st.session_state:
     st.session_state["stored_session"] = []
 
 
-
+# Define a function to get the user input
 def get_text():
     """
     Get the user input text.
@@ -70,7 +62,7 @@ def get_text():
     return input_text
 
 
-
+# Define a function to start a new chat: sometimes it is useful to erase MemoryBot and its memory or context, starting a new conversation
 def new_chat():
     """
     Clears session state and starts a new chat.
@@ -86,7 +78,7 @@ def new_chat():
     st.session_state.entity_memory.store = {}
     st.session_state.entity_memory.buffer.clear()
 
-
+# Add functionalities like the possibility to choose the model to be used
 with st.sidebar.expander(" 🛠️ Settings ", expanded=False):
 # Option to preview memory store
     if st.checkbox("Preview memory store"):
@@ -105,20 +97,25 @@ st.markdown(
         ''' 
         > :black[**A Chatbot that remembers,**  *powered by -  [LangChain]('https://langchain.readthedocs.io/en/latest/modules/memory.html#memory') + 
         [OpenAI]('https://platform.openai.com/docs/models') + 
-        [Streamlit]('https://streamlit.io') + [DataButton](https://www.databutton.io/)*]
+        [Streamlit]('https://streamlit.io')*]
         ''')
 # st.markdown(" > Powered by -  🦜 LangChain + OpenAI + Streamlit")
 
+# 3 things:
+# 1. Open AI Instance has to be created (later called)
+# 2. ConversationEntityMemory is stored (as session state)
+# 3. Initiated ConversationChain
+
 # Ask the user to enter their OpenAI API key
-API_O = st.sidebar.text_input(":blue[Enter Your OPENAI API-KEY :]", 
+OPENAI_API = st.sidebar.text_input(":blue[Enter Your OPENAI API-KEY :]", 
                 placeholder="Paste your OpenAI API key here (sk-...)",
                 type="password") # Session state storage would be ideal
 
 
-if API_O:
+if OPENAI_API:
     # Create an OpenAI instance
     llm = ChatOpenAI(temperature=0,
-                openai_api_key=API_O, 
+                openai_api_key=OPENAI_API, 
                 model_name=MODEL, 
                 verbose=False) 
 
@@ -136,11 +133,11 @@ if API_O:
 else:
     st.markdown(''' 
         ```
-        - 1. Enter API Key + Hit enter 🔐 
+        - 1. Please enter your OpenAI API Key, THEN HIT ENTER 🔐 
 
-        - 2. Ask anything via the text input widget
+        - 2. Ask anything in natural language via the text input widget
 
-        Your API-key is not stored in any form by this app. However, for transparency ensure to delete your API once used.
+        The API-key is not stored in any form.
         ```
         
         ''')
