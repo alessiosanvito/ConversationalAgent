@@ -16,21 +16,21 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from langchain.chains import ConversationChain
 from langchain.chains.conversation.memory import ConversationEntityMemory
-from langchain.chains.conversation.prompt import ENTITY_MEMORY_CONVERSATION_TEMPLATE
+# from langchain.chains.conversation.prompt import ENTITY_MEMORY_CONVERSATION_TEMPLATE (usato questo prompt ma leggermente modificato)
 from langchain.prompts.prompt import PromptTemplate
 
 
 # PROMPT
-from keyprompt_secrets import templateAgent
+from keyprompt_secrets import _DEFAULT_ENTITY_MEMORY_CONVERSATION_TEMPLATE
 
 
 st.set_page_config(page_title='🧠JailbreakGPT🤖', layout='wide')
 
+# è COSì DI DEFAULT, si può evitare di usare il promptTemplate e usare solo from langchain.chains.conversation.prompt import ENTITY_MEMORY_CONVERSATION_TEMPLATE
 
-# Prompt definition (inspired by ENTITY_MEMORY_CONVERSATION_TEMPLATE)
-ENTITY_MEMORY_CONVERSATION_PROMPT = PromptTemplate(
+ENTITY_MEMORY_CONVERSATION_TEMPLATE = PromptTemplate(
     input_variables=["entities", "history", "input"],
-    template=templateAgent # _DEFAULT_ENTITY_MEMORY_CONVERSATION_TEMPLATE,
+    template=_DEFAULT_ENTITY_MEMORY_CONVERSATION_TEMPLATE,
 )
 
 
@@ -127,7 +127,7 @@ if OPENAI_API:
         # Create the ConversationChain object with the specified configuration
     Conversation = ConversationChain(
             llm=llm, 
-            prompt=ENTITY_MEMORY_CONVERSATION_PROMPT,
+            prompt=ENTITY_MEMORY_CONVERSATION_TEMPLATE,
             memory=st.session_state.entity_memory
         )  
 else:
